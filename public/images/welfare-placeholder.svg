@@ -1,0 +1,5 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="20" cy="20" r="20" fill="#F5F5F4"/> <!-- Stone-100 -->
+  <path d="M20 10L10 17.5V30H30V17.5L20 10Z" fill="#A8A29E"/> <!-- Stone-400 -->
+  <path d="M15 30V20H25V30" fill="#E7E5E4"/> <!-- Stone-200 -->
+</svg>

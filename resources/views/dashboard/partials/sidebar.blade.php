@@ -33,6 +33,10 @@
                         class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('welfares.*') ? 'text-amber-500 font-bold' : '' }}">
                         <i class='bx bx-building'></i> Welfares
                     </a>
+                    <a href="{{ route('admin.revenue.index') }}"
+                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('admin.revenue.*') ? 'text-amber-500 font-bold' : '' }}">
+                        <i class='bx bx-money'></i> Welfare Revenue Tracking
+                    </a>
                     <a href="{{ route('admin.users.index') }}"
                         class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition">
                         <i class='bx bx-user-group'></i> User Management

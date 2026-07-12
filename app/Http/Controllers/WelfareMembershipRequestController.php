@@ -11,7 +11,9 @@ class WelfareMembershipRequestController extends Controller
 {
     public function index($id, $slug)
     {
-        $welfare = Welfare::where('id', $id)->where('slug', $slug)->firstOrFail();
+        $welfare = Welfare::where('id', $id)
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         // Get all requests for audit/stats, order by latest
         $requests = WelfareMembershipRequest::where('welfare_id', $welfare->id)
@@ -24,7 +26,9 @@ class WelfareMembershipRequestController extends Controller
 
     public function store(Request $request, $id, $slug)
     {
-        $welfare = Welfare::where('id', $id)->where('slug', $slug)->firstOrFail();
+        $welfare = Welfare::where('id', $id)
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         // Prevent duplicate applications (pending or already approved)
         $existingRequest = WelfareMembershipRequest::where('welfare_id', $welfare->id)
@@ -48,22 +52,38 @@ class WelfareMembershipRequestController extends Controller
 
     public function updateStatus(Request $request, $id, $slug, $requestId)
     {
-        $request->validate(['status' => 'required|in:approved,rejected']);
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'member_number' => 'required_if:status,approved|nullable|string|max:255|unique:welfare_members,member_number',
+        ]);
 
         $req = WelfareMembershipRequest::where('id', $requestId)
-            ->whereHas('welfare', fn($q) => $q->where('id', $id)->where('slug', $slug))
+            ->whereHas('welfare', function ($q) use ($id, $slug) {
+                $q->where('id', $id)
+                  ->where('slug', $slug);
+            })
             ->firstOrFail();
 
-        $req->update(['status' => $request->status]);
+        $req->update([
+            'status' => $request->status,
+        ]);
 
         if ($request->status === 'approved') {
-            // Create the member record if approved
-            WelfareMember::create([
-                'welfare_id' => $req->welfare_id,
-                'user_id' => $req->user_id,
-                'status' => 'active',
-                'role' => 'member'
-            ]);
+
+            // Prevent duplicate membership
+            $existingMember = WelfareMember::where('welfare_id', $req->welfare_id)
+                ->where('user_id', $req->user_id)
+                ->exists();
+
+            if (!$existingMember) {
+                WelfareMember::create([
+                    'welfare_id'    => $req->welfare_id,
+                    'user_id'       => $req->user_id,
+                    'member_number' => $request->member_number,
+                    'status'        => 'active',
+                    'role'          => 'member',
+                ]);
+            }
         }
 
         return back()->with('success', 'Request ' . $request->status . ' successfully.');

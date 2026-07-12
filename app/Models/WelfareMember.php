@@ -11,6 +11,7 @@ class WelfareMember extends Model
         'welfare_id',
         'member_number',
         'role',
+        'status', // Ensure status is fillable if you use it
     ];
 
     public function user()
@@ -33,11 +34,14 @@ class WelfareMember extends Model
         return $this->hasMany(SolidarityFund::class);
     }
 
+    /**
+     * Get the current balance using a single, efficient query.
+     * This calculates balance as: Deposits - Deductions
+     */
     public function getSolidarityBalanceAttribute()
     {
-        $deposits = $this->solidarityFunds()->where('type', 'deposit')->sum('amount');
-        $deductions = $this->solidarityFunds()->where('type', 'deduction')->sum('amount');
-
-        return $deposits - $deductions;
+        return $this->solidarityFunds()
+            ->selectRaw("SUM(CASE WHEN type = 'deposit' THEN amount ELSE -amount END) as balance")
+            ->value('balance') ?? 0;
     }
 }

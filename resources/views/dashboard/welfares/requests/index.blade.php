@@ -69,14 +69,13 @@
         </div>
     </div>
 
-    <!-- Approval Modal -->
+    {{-- Approval Modal --}}
     <div x-show="showModal" x-cloak class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
         <form :action="'/welfares/{{ $welfare->id }}/{{ $welfare->slug }}/requests/' + targetReqId" method="POST" class="bg-white p-8 rounded-3xl max-w-sm w-full shadow-2xl">
             @csrf @method('PUT')
             <h3 class="font-black text-teal-900 text-lg mb-2">Approve Application</h3>
             <p class="text-sm text-stone-600 mb-6">
-                You need to assign a membership number to this membership request application for 
-                <span class="font-bold text-teal-900" x-text="targetName"></span>.
+                Assign a membership number for <span class="font-bold text-teal-900" x-text="targetName"></span>.
             </p>
             
             <input type="text" name="member_number" placeholder="Enter Membership Number" 
@@ -100,7 +99,7 @@
 function confirmReject(url) {
     Swal.fire({
         title: 'Confirm Rejection',
-        text: "Are you sure you want to reject this request? This action will be logged.",
+        text: "Are you sure? This request will be marked as rejected in the audit log.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',

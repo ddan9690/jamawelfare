@@ -129,12 +129,27 @@ class WelfareBenevolenceCaseController extends Controller
     public function show($id)
     {
         $welfareId = Session::get('active_welfare_id');
+
+        // 1. Fetch the specific case with all required relationships
         $case = WelfareBenevolenceCase::where('welfare_id', $welfareId)
             ->with(['member.user', 'category', 'contributions.member.user'])
             ->findOrFail($id);
 
+        // 2. Fetch active members for the "Record Payment" modal dropdown
+        // This fixes the 'Undefined variable $members' error
+        $members = WelfareMember::where('welfare_id', $welfareId)
+            ->where('status', 'active')
+            ->join('users', 'welfare_members.user_id', '=', 'users.id')
+            ->orderBy('users.name', 'asc')
+            ->select('welfare_members.*')
+            ->with('user')
+            ->get();
+
+        // 3. Calculate total contributions
         $totalCollected = $case->contributions->sum('amount');
-        return view('dashboard.benevolence-cases.show', compact('case', 'totalCollected'));
+
+        // 4. Pass all necessary data to the view
+        return view('dashboard.benevolence-cases.show', compact('case', 'totalCollected', 'members'));
     }
 
     public function destroy(WelfareBenevolenceCase $case)

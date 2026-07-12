@@ -2,41 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Welfare;
-use App\Models\WelfareBenevolenceCase;
-use App\Models\WelfareMember;
+use App\Models\{Welfare, WelfareBenevolenceCase, WelfareMember, WelfareContribution};
 use Illuminate\Http\Request;
 
 class WelfareMemberController extends Controller
 {
-    /**
-     * Display a listing of the members for a specific welfare.
-     */
     public function index($id, $slug)
     {
-        // 1. Fetch the welfare
         $welfare = Welfare::where('id', $id)
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // 2. Paginate members with eager loaded relationships
-        // We filter by status inside the query for better performance
-        $activeMembers =WelfareMember::where('welfare_id', $welfare->id)
-            ->where('status', 'active')
-            ->with(['user', 'solidarityFunds'])
-            ->paginate(50);
+        $this->runComplianceAudit($welfare->id);
 
-        $inactiveMembers = WelfareMember::where('welfare_id', $welfare->id)
-            ->where('status', 'inactive')
+        $members = WelfareMember::where('welfare_id', $welfare->id)
             ->with(['user', 'solidarityFunds'])
-            ->paginate(50);
+            ->get()
+            ->groupBy('status');
 
-        return view('dashboard.welfares.members.index', compact('welfare', 'activeMembers', 'inactiveMembers'));
+        $activeMembers = $members->get('active', collect());
+        $inactiveMembers = $members->get('inactive', collect());
+        $suspendedMembers = $members->get('suspended', collect());
+
+        return view('dashboard.welfares.members.index', compact('welfare', 'activeMembers', 'inactiveMembers', 'suspendedMembers'));
     }
 
-    /**
-     * Remove an admin (Logic called by your show.blade.php button).
-     */
+    private function runComplianceAudit($welfareId)
+    {
+        $members = WelfareMember::where('welfare_id', $welfareId)
+            ->where('status', '!=', 'inactive')
+            ->get();
+
+        $lastThreeCases = WelfareBenevolenceCase::where('welfare_id', $welfareId)
+            ->where('status', '!=', 'suspended')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        if ($lastThreeCases->count() < 3) return;
+
+        foreach ($members as $member) {
+            $missedCount = 0;
+            foreach ($lastThreeCases as $case) {
+                $contributed = WelfareContribution::where('welfare_benevolence_case_id', $case->id)
+                    ->where('member_id', $member->id)
+                    ->exists();
+                
+                if (!$contributed) $missedCount++;
+            }
+
+            if ($missedCount >= 3 && $member->status !== 'suspended') {
+                $member->update(['status' => 'suspended']);
+            } elseif ($missedCount < 3 && $member->status === 'suspended') {
+                $member->update(['status' => 'active']);
+            }
+        }
+    }
+
     public function removeAdmin(Request $request, $id, $slug, $memberId)
     {
         $welfare = Welfare::where('id', $id)->where('slug', $slug)->firstOrFail();
@@ -46,15 +68,11 @@ class WelfareMemberController extends Controller
             ->where('role', 'admin')
             ->firstOrFail();
 
-        // Update the role to 'member' or remove as you see fit
         $member->update(['role' => 'member']);
 
         return back()->with('success', 'Admin privileges removed successfully.');
     }
 
-    /**
-     * Add an admin (Logic called by your search/add modal).
-     */
     public function addAdmin(Request $request, $id, $slug)
     {
         $request->validate([
@@ -95,7 +113,6 @@ class WelfareMemberController extends Controller
         $participatedCases = $member->contributions->pluck('case_id')->unique()->count();
         $percentage = $totalCases > 0 ? ($participatedCases / $totalCases) * 100 : 0;
 
-        // Fetch participation trend (e.g., count contributions per month)
         $trendData = $member->contributions()
             ->selectRaw('DATE_FORMAT(payment_date, "%b") as month')
             ->selectRaw('count(*) as count')

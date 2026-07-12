@@ -3,10 +3,9 @@
 
 @section('content')
 <div x-data="{ 
-    showDetails: false, 
-    modalDetails: '', 
-    showExtend: false,
-    extendRoute: ''
+    showDetails: false, modalDetails: '', 
+    showExtend: false, extendRoute: '',
+    showStatus: false, statusRoute: '', currentStatus: ''
 }" class="p-4 md:p-6">
 
     @if(session('success'))
@@ -18,12 +17,11 @@
         <a href="{{ route('benevolence-cases.create') }}" class="bg-teal-900 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-amber-600 transition">+ New Case</a>
     </div>
 
-    <!-- Table -->
     <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
                 <tr class="text-left text-xs uppercase text-stone-400 border-b border-stone-100">
-                    <th class="py-3">Case No.</th> <!-- Added Column -->
+                    <th class="py-3">Case No.</th>
                     <th class="py-3">Mem No.</th> 
                     <th class="py-3">Member</th> 
                     <th class="py-3">Category</th> 
@@ -37,20 +35,27 @@
             <tbody>
                 @forelse($cases as $case)
                 <tr class="border-b border-stone-50">
-                    <td class="py-4 font-bold text-stone-800">{{ $case->case_number }}</td> <!-- Added Data -->
+                    <td class="py-4 font-bold text-stone-800">{{ $case->case_number }}</td>
                     <td class="py-4 font-bold text-teal-600">{{ $case->member->member_number }}</td>
                     <td class="py-4 font-bold text-teal-900">
-                        <a href="{{ route('benevolence-cases.show', $case->id) }}" class="hover:text-teal-600 hover:underline">
-                            {{ $case->member->user->name }}
-                        </a>
+                        <a href="{{ route('benevolence-cases.show', $case->id) }}" class="hover:text-teal-600 hover:underline">{{ $case->member->user->name }}</a>
                     </td>
                     <td class="py-4 text-stone-600">{{ $case->category->name }}</td>
                     <td class="py-4 text-stone-600">Ksh {{ number_format($case->amount_to_contribute, 0) }}</td>
                     <td class="py-4 text-stone-500">{{ \Carbon\Carbon::parse($case->deadline)->format('d M Y') }}</td>
                     <td class="py-4">
-                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase {{ $case->status == 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-stone-100 text-stone-600' }}">
-                            {{ $case->status }}
-                        </span>
+                        <div class="flex flex-col">
+                            <span @class([
+                                'px-2 py-1 rounded text-[10px] font-bold uppercase w-max',
+                                'bg-emerald-50 text-emerald-600' => $case->status == 'active',
+                                'bg-amber-50 text-amber-600' => $case->status == 'closed',
+                                'bg-red-50 text-red-600' => $case->status == 'suspended',
+                            ])>
+                                {{ $case->status }}
+                            </span>
+                            <button @click="showStatus = true; statusRoute = '{{ route('benevolence-cases.update-status', $case->id) }}'; currentStatus = '{{ $case->status }}'" 
+                                    class="text-[9px] text-teal-600 hover:underline mt-1 font-bold">Change Status</button>
+                        </div>
                     </td>
                     <td class="py-4">
                         <button @click="showDetails = true; modalDetails = `{{ addslashes($case->details) }}`" class="text-teal-600 font-bold underline">View</button>
@@ -64,13 +69,12 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="9" class="py-6 text-center text-stone-400">No active cases found.</td></tr>
+                <tr><td colspan="9" class="py-6 text-center text-stone-400">No cases found.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    <!-- Details Modal -->
     <div x-show="showDetails" x-cloak class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div @click.away="showDetails = false" class="bg-white p-6 rounded-2xl w-full max-w-lg shadow-2xl">
             <h3 class="text-lg font-black text-teal-900 mb-4">Case Details</h3>
@@ -79,7 +83,6 @@
         </div>
     </div>
 
-    <!-- Extend Deadline Modal -->
     <div x-show="showExtend" x-cloak class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div @click.away="showExtend = false" class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl">
             <h3 class="text-lg font-black text-teal-900 mb-4">Extend Deadline</h3>
@@ -89,6 +92,27 @@
                 <input type="date" name="new_deadline" class="w-full p-3 rounded-xl border border-stone-200 text-sm" required>
                 <div class="flex gap-3 mt-6">
                     <button type="button" @click="showExtend = false" class="flex-1 py-3 rounded-xl bg-stone-100 font-bold text-sm">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-teal-900 text-white font-bold text-sm">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div x-show="showStatus" x-cloak class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div @click.away="showStatus = false" class="bg-white p-6 rounded-2xl w-full max-w-xs shadow-2xl">
+            <h3 class="text-lg font-black text-teal-900 mb-4">Change Status</h3>
+            <form :action="statusRoute" method="POST">
+                @csrf @method('PATCH')
+                <div class="space-y-2">
+                    @foreach(['active', 'closed', 'suspended'] as $s)
+                        <label class="flex items-center p-3 rounded-xl border border-stone-200 cursor-pointer hover:bg-stone-50">
+                            <input type="radio" name="status" value="{{ $s }}" :checked="currentStatus == '{{ $s }}'" class="text-teal-900">
+                            <span class="ml-3 text-sm font-bold capitalize">{{ $s }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" @click="showStatus = false" class="flex-1 py-3 rounded-xl bg-stone-100 font-bold text-sm">Cancel</button>
                     <button type="submit" class="flex-1 py-3 rounded-xl bg-teal-900 text-white font-bold text-sm">Update</button>
                 </div>
             </form>

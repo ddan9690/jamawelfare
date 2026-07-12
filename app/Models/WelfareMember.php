@@ -27,4 +27,17 @@ class WelfareMember extends Model
     {
         return $this->hasMany(WelfareContribution::class, 'member_id');
     }
+
+    public function solidarityFunds()
+    {
+        return $this->hasMany(SolidarityFund::class);
+    }
+
+    public function getSolidarityBalanceAttribute()
+    {
+        $deposits = $this->solidarityFunds()->where('type', 'deposit')->sum('amount');
+        $deductions = $this->solidarityFunds()->where('type', 'deduction')->sum('amount');
+
+        return $deposits - $deductions;
+    }
 }

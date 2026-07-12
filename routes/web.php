@@ -6,8 +6,10 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\BenevolenceCategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MemberProfileController;
 use App\Http\Controllers\Pdf\BenevolenceContributionPdfController;
 use App\Http\Controllers\Pdf\WelfareMemberPdfController;
+use App\Http\Controllers\SolidarityFundController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelfareBenevolenceCaseController;
 use App\Http\Controllers\WelfareContributionController;
@@ -58,7 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Comprehensive Welfare management
     Route::prefix('welfares')->group(function () {
         Route::get('/{id}/{slug}', [WelfareController::class, 'show'])->name('welfares.show')->middleware('can:viewDashboard,App\Models\Welfare');
-        
+
         Route::middleware('can:manageWelfare,App\Models\Welfare')->group(function () {
             Route::get('/', [WelfareController::class, 'index'])->name('welfares.index');
             Route::get('/create', [WelfareController::class, 'create'])->name('welfares.create');
@@ -66,12 +68,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{id}/{slug}/edit', [WelfareController::class, 'edit'])->name('welfares.edit');
             Route::put('/{id}/{slug}', [WelfareController::class, 'update'])->name('welfares.update');
             Route::delete('/{id}/{slug}', [WelfareController::class, 'destroy'])->name('welfares.destroy');
-            
+
             // Member and Admin management
             Route::get('/{id}/{slug}/search-members', [WelfareController::class, 'searchMembers'])->name('welfares.searchMembers');
             Route::post('/{id}/{slug}/add-admin', [WelfareController::class, 'addAdmin'])->name('welfares.addAdmin');
             Route::post('/{id}/{slug}/remove-admin/{memberId}', [WelfareController::class, 'removeAdmin'])->name('welfares.removeAdmin');
-            
+
             Route::get('/{id}/{slug}/members', [WelfareMemberController::class, 'index'])->name('welfares.members.index');
             Route::get('/{id}/{slug}/requests', [WelfareMembershipRequestController::class, 'index'])->name('welfares.requests.index');
             Route::get('/{id}/{slug}/requests/{requestId}', [WelfareMembershipRequestController::class, 'show'])->name('welfares.requests.show');
@@ -100,12 +102,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{case}', [WelfareBenevolenceCaseController::class, 'show'])->name('benevolence-cases.show');
         Route::patch('/{case}/extend', [WelfareBenevolenceCaseController::class, 'extend'])->name('benevolence-cases.extend');
         Route::delete('/{case}', [WelfareBenevolenceCaseController::class, 'destroy'])->name('benevolence-cases.destroy');
+        Route::patch('/{case}/update-status', [WelfareBenevolenceCaseController::class, 'updateStatus'])->name('benevolence-cases.update-status');
     });
 
     Route::prefix('contributions')->group(function () {
         Route::post('/{caseId}', [WelfareContributionController::class, 'store'])->name('contributions.store');
         Route::patch('/{contribution}', [WelfareContributionController::class, 'update'])->name('contributions.update');
         Route::delete('/{contribution}', [WelfareContributionController::class, 'destroy'])->name('contributions.destroy');
+        Route::post('/solidarity-funds/store', [SolidarityFundController::class, 'store'])->name('solidarity-funds.store');
     });
 
     // User administration
@@ -122,4 +126,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/welfare/{id}/members/search', [WelfareMemberController::class, 'search'])->name('members.search');
     Route::get('/welfare/{id}/member/{memberId}/profile', [WelfareMemberController::class, 'profile'])->name('members.profile');
     Route::patch('/welfare/member/{memberId}/status', [WelfareMemberController::class, 'updateStatus'])->name('members.updateStatus');
+});
+
+Route::prefix('my')->name('member.')->group(function () {
+    Route::get('/cases', [MemberProfileController::class, 'myCases'])->name('my-cases');
+    Route::get('/contributions', [MemberProfileController::class, 'myContributions'])->name('my-contributions');
 });

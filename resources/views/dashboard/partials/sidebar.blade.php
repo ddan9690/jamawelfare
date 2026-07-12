@@ -1,11 +1,9 @@
-<div x-show="sidebarOpen" 
-     x-transition.opacity 
-     @click="sidebarOpen = false"
-     class="fixed inset-0 bg-black/50 z-40 lg:hidden">
+<div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden">
 </div>
 
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-       class="fixed inset-y-0 left-0 w-64 bg-teal-900 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 z-50 overflow-y-auto shadow-xl">
+    class="fixed inset-y-0 left-0 w-64 bg-teal-900 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 z-50 overflow-y-auto shadow-xl">
 
     <div class="p-6 flex items-center justify-between border-b border-teal-800">
         <div class="text-xl font-black text-amber-500">
@@ -17,7 +15,7 @@
     </div>
 
     <div class="px-6 py-6 space-y-8">
-        
+
         <div>
             <nav class="space-y-1">
                 <a href="{{ route('dashboard') }}"
@@ -67,10 +65,12 @@
             <p class="text-[10px] uppercase font-bold text-teal-400 mb-3 tracking-wider">My Account</p>
             <nav class="space-y-1">
                 @if (isset($activeWelfare) && $activeWelfare)
-                    <a href="#" class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition">
+                    <a href="{{ route('member.my-cases') }}"
+                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('member.my-cases') ? 'text-amber-400 font-bold' : '' }}">
                         <i class='bx bx-folder'></i> My Cases
                     </a>
-                    <a href="#" class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition">
+                    <a href="{{ route('member.my-contributions') }}"
+                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('member.my-contributions') ? 'text-amber-400 font-bold' : '' }}">
                         <i class='bx bx-chart'></i> My Contributions
                     </a>
                 @else

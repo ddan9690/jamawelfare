@@ -14,12 +14,22 @@ class WelfareMemberController extends Controller
      */
     public function index($id, $slug)
     {
+        // 1. Fetch the welfare
         $welfare = Welfare::where('id', $id)
             ->where('slug', $slug)
-            ->with(['members.user'])
             ->firstOrFail();
-        $activeMembers = $welfare->members->where('status', 'active');
-        $inactiveMembers = $welfare->members->where('status', 'inactive');
+
+        // 2. Paginate members with eager loaded relationships
+        // We filter by status inside the query for better performance
+        $activeMembers =WelfareMember::where('welfare_id', $welfare->id)
+            ->where('status', 'active')
+            ->with(['user', 'solidarityFunds'])
+            ->paginate(50);
+
+        $inactiveMembers = WelfareMember::where('welfare_id', $welfare->id)
+            ->where('status', 'inactive')
+            ->with(['user', 'solidarityFunds'])
+            ->paginate(50);
 
         return view('dashboard.welfares.members.index', compact('welfare', 'activeMembers', 'inactiveMembers'));
     }

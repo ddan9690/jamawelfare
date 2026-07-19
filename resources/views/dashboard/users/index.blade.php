@@ -1,50 +1,52 @@
 @extends('layouts.dashboard')
 @section('content')
-<div class="p-6">
+<div class="p-2 md:p-6">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-black text-teal-900">User Management (Total: {{ $totalUsers }})</h1>
+        <h1 class="text-xl font-black text-teal-900">User Management <span class="text-stone-400 font-normal">({{ $totalUsers }})</span></h1>
     </div>
     
-    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm">
-        <table class="w-full text-xs">
-            <thead class="bg-stone-50 border-b border-stone-200">
-                <tr class="text-left text-stone-400 uppercase">
-                    <th class="p-3">#</th>
-                    <th class="p-3">Name</th>
-                    <th class="p-3">Phone</th>
-                    <th class="p-3">TSC No</th>
-                    <th class="p-3">County</th>
-                    <th class="p-3">Level</th>
-                    <th class="p-3 text-center">Super Admin</th>
-                    <th class="p-3 text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-stone-100">
-                @foreach($users as $index => $user)
-                <tr class="hover:bg-stone-50">
-                    <td class="p-3 text-stone-400">{{ $index + 1 }}</td>
-                    <td class="p-3 font-bold text-teal-900">{{ $user->name }}</td>
-                    <td class="p-3">{{ $user->phone }}</td>
-                    <td class="p-3">{{ $user->tsc_number ?? 'N/A' }}</td>
-                    <td class="p-3">{{ $user->county->name ?? 'N/A' }}</td>
-                    <td class="p-3">{{ $user->level }}</td>
-                    <td class="p-3 text-center text-xl">
-                        <button onclick="confirmToggleAdmin({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->is_super_admin ? 1 : 0 }})">
-                            @if($user->is_super_admin)
-                                <i class='bx bxs-toggle-right text-emerald-600'></i>
-                            @else
-                                <i class='bx bx-toggle-left text-stone-300'></i>
-                            @endif
-                        </button>
-                    </td>
-                    <td class="p-3 text-right">
-                        <a href="{{ route('admin.users.show', $user) }}" class="text-teal-600 font-bold hover:underline mr-2">View</a>
-                        <button onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="text-red-600 font-bold hover:underline">Delete</button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-[11px] text-left border-collapse">
+                <thead class="bg-stone-50 border-b border-stone-200 uppercase text-stone-400">
+                    <tr>
+                        <th class="p-3">#</th>
+                        <th class="p-3 whitespace-nowrap">Name</th>
+                        <th class="p-3 whitespace-nowrap">Phone</th>
+                        <th class="p-3 whitespace-nowrap">TSC No</th>
+                        <th class="p-3 whitespace-nowrap">County</th>
+                        <th class="p-3 whitespace-nowrap">Level</th>
+                        <th class="p-3 text-center">Admin</th>
+                        <th class="p-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100">
+                    @foreach($users as $index => $user)
+                    <tr class="hover:bg-stone-50 transition">
+                        <td class="p-3 text-stone-400">{{ $index + 1 }}</td>
+                        <td class="p-3 font-bold text-teal-900 whitespace-nowrap">{{ $user->name }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ $user->phone }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ $user->tsc_number ?? 'N/A' }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ $user->county->name ?? 'N/A' }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ $user->level }}</td>
+                        <td class="p-3 text-center text-xl">
+                            <button onclick="confirmToggleAdmin({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->is_super_admin ? 1 : 0 }})">
+                                @if($user->is_super_admin)
+                                    <i class='bx bxs-toggle-right text-emerald-600'></i>
+                                @else
+                                    <i class='bx bx-toggle-left text-stone-300'></i>
+                                @endif
+                            </button>
+                        </td>
+                        <td class="p-3 text-right whitespace-nowrap">
+                            <a href="{{ route('admin.users.show', $user) }}" class="text-teal-600 font-bold hover:underline mr-3">View</a>
+                            <button onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="text-red-600 font-bold hover:underline">Delete</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

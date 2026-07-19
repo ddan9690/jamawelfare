@@ -6,75 +6,83 @@
     showDetails: false, modalDetails: '', 
     showExtend: false, extendRoute: '',
     showStatus: false, statusRoute: '', currentStatus: ''
-}" class="p-4 md:p-6">
+}" class="p-4 md:p-8 max-w-7xl mx-auto">
 
     @if(session('success'))
         <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-sm">{{ session('success') }}</div>
     @endif
 
     <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-black text-teal-900">Benevolence Cases</h2>
-        <a href="{{ route('benevolence-cases.create') }}" class="bg-teal-900 text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-amber-600 transition">+ New Case</a>
+        <div>
+            <h2 class="text-3xl font-black text-teal-900">Benevolence Cases</h2>
+            <p class="text-stone-500 font-bold mt-1">Manage and track active welfare support cases.</p>
+        </div>
+        <a href="{{ route('benevolence-cases.create') }}" class="bg-teal-900 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-amber-600 transition shadow-lg">+ New Case</a>
     </div>
 
-    <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="text-left text-xs uppercase text-stone-400 border-b border-stone-100">
-                    <th class="py-3">Case No.</th>
-                    <th class="py-3">Mem No.</th> 
-                    <th class="py-3">Member</th> 
-                    <th class="py-3">Category</th> 
-                    <th class="py-3">Amount</th> 
-                    <th class="py-3">Deadline</th> 
-                    <th class="py-3">Status</th> 
-                    <th class="py-3">Details</th> 
-                    <th class="py-3 text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($cases as $case)
-                <tr class="border-b border-stone-50">
-                    <td class="py-4 font-bold text-stone-800">{{ $case->case_number }}</td>
-                    <td class="py-4 font-bold text-teal-600">{{ $case->member->member_number }}</td>
-                    <td class="py-4 font-bold text-teal-900">
-                        <a href="{{ route('benevolence-cases.show', $case->id) }}" class="hover:text-teal-600 hover:underline">{{ $case->member->user->name }}</a>
-                    </td>
-                    <td class="py-4 text-stone-600">{{ $case->category->name }}</td>
-                    <td class="py-4 text-stone-600">Ksh {{ number_format($case->amount_to_contribute, 0) }}</td>
-                    <td class="py-4 text-stone-500">{{ \Carbon\Carbon::parse($case->deadline)->format('d M Y') }}</td>
-                    <td class="py-4">
-                        <div class="flex flex-col">
-                            <span @class([
-                                'px-2 py-1 rounded text-[10px] font-bold uppercase w-max',
-                                'bg-emerald-50 text-emerald-600' => $case->status == 'active',
-                                'bg-amber-50 text-amber-600' => $case->status == 'closed',
-                                'bg-red-50 text-red-600' => $case->status == 'suspended',
-                            ])>
-                                {{ $case->status }}
-                            </span>
-                            <button @click="showStatus = true; statusRoute = '{{ route('benevolence-cases.update-status', $case->id) }}'; currentStatus = '{{ $case->status }}'" 
-                                    class="text-[9px] text-teal-600 hover:underline mt-1 font-bold">Change Status</button>
-                        </div>
-                    </td>
-                    <td class="py-4">
-                        <button @click="showDetails = true; modalDetails = `{{ addslashes($case->details) }}`" class="text-teal-600 font-bold underline">View</button>
-                    </td>
-                    <td class="py-4 text-right space-x-2">
-                        <button @click="showExtend = true; extendRoute = '{{ route('benevolence-cases.extend', $case->id) }}'" class="text-blue-600 font-bold hover:underline">Extend</button>
-                        <form action="{{ route('benevolence-cases.destroy', $case->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this case?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-red-600 font-bold hover:underline">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="9" class="py-6 text-center text-stone-400">No cases found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($cases as $case)
+        <div class="bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col">
+            
+            {{-- Card Header & Status --}}
+            <div class="bg-stone-50 p-5 border-b border-stone-100">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-black uppercase text-teal-900 tracking-wider">Case {{ $case->case_number }}</span>
+                    <a href="{{ route('benevolence-cases.show', $case->id) }}" class="text-[10px] font-bold bg-teal-100 text-teal-800 px-3 py-1 rounded-full hover:bg-teal-200">VIEW</a>
+                </div>
+                <span @class(['px-3 py-1 rounded-full text-[10px] font-black uppercase', 'bg-emerald-100 text-emerald-700' => $case->status == 'active', 'bg-amber-100 text-amber-700' => $case->status == 'closed', 'bg-red-100 text-red-700' => $case->status == 'suspended'])>
+                    {{ $case->status }}
+                </span>
+            </div>
+
+            {{-- Card Body --}}
+            <div class="p-5 flex-grow space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Member Name</p>
+                        <p class="font-black text-teal-900">{{ $case->member->user->name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Member #</p>
+                        <p class="font-black text-teal-600">{{ $case->member->member_number }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-bold text-stone-400 uppercase">Affected Family Member</p>
+                    <p class="text-sm font-bold text-stone-700">{{ $case->category->name }}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 items-end">
+                    <div>
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Contribution</p>
+                        <p class="text-sm font-black text-emerald-600">KES {{ number_format($case->amount_to_contribute, 0) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Deadline</p>
+                        <p class="text-sm font-bold text-stone-600">{{ \Carbon\Carbon::parse($case->deadline)->format('d M, Y') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Card Actions --}}
+            <div class="p-4 bg-stone-50 border-t border-stone-100 grid grid-cols-1 gap-2">
+                <button @click="showStatus = true; statusRoute = '{{ route('benevolence-cases.update-status', $case->id) }}'; currentStatus = '{{ $case->status }}'" class="w-full text-[11px] font-bold text-white bg-teal-700 py-2.5 rounded-lg hover:bg-teal-800">Change Status</button>
+                <button @click="showExtend = true; extendRoute = '{{ route('benevolence-cases.extend', $case->id) }}'" class="w-full text-[11px] font-bold text-white bg-blue-600 py-2.5 rounded-lg hover:bg-blue-700">Extend Deadline</button>
+                <form action="{{ route('benevolence-cases.destroy', $case->id) }}" method="POST" onsubmit="return confirm('Delete this case?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="w-full text-[11px] font-bold text-white bg-red-600 py-2.5 rounded-lg hover:bg-red-700">Delete Case</button>
+                </form>
+            </div>
+        </div>
+        @empty
+        <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-stone-200">
+            <p class="text-stone-400 font-bold">No benevolence cases found at the moment.</p>
+        </div>
+        @endforelse
     </div>
 
+    {{-- Modals --}}
     <div x-show="showDetails" x-cloak class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
         <div @click.away="showDetails = false" class="bg-white p-6 rounded-2xl w-full max-w-lg shadow-2xl">
             <h3 class="text-lg font-black text-teal-900 mb-4">Case Details</h3>

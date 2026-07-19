@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="p-4 md:p-6 max-w-7xl mx-auto" id="dashboardContent">
-    @if(!isset($activeWelfare) || !$activeWelfare)
+    @if(!$activeWelfare)
         <div class="max-w-2xl mx-auto mt-10 bg-white p-10 rounded-3xl border border-stone-200 text-center shadow-sm">
             <div class="text-6xl mb-6">👋</div>
             <h2 class="text-2xl font-black text-teal-900 mb-4">Welcome, {{ explode(' ', trim(auth()->user()->name))[0] }}!</h2>
@@ -10,16 +10,13 @@
             <a href="{{ route('frontend.explore') }}" class="inline-block bg-teal-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-amber-600 transition shadow-lg">Explore Welfares</a>
         </div>
     @else
-        
-        {{-- Suspended Warning --}}
-        @if(auth()->user()->welfareMember && auth()->user()->welfareMember->status == 'suspended')
+        @if($member && $member->status == 'suspended')
             <div class="bg-red-600 p-8 rounded-3xl mb-8 border-4 border-red-800 shadow-2xl">
                 <h2 class="text-white text-3xl font-black mb-2 uppercase tracking-tight">Membership Suspended</h2>
                 <p class="text-red-100 font-bold text-lg mb-6">Your membership is suspended due to missed contributions. Please contact welfare officials.</p>
             </div>
         @endif
 
-        {{-- Welfare Header Section --}}
         <div class="mb-8 flex flex-col items-center text-center">
             @if(!empty($activeWelfare->logo))
                 <img src="{{ asset('storage/' . $activeWelfare->logo) }}" alt="{{ $activeWelfare->name }}" class="w-20 h-20 object-cover rounded-full border-4 border-teal-50 shadow-md mb-4">
@@ -27,7 +24,6 @@
             <h1 class="text-2xl font-black text-teal-900">{{ $activeWelfare->name }}</h1>
             <span class="text-sm font-bold text-teal-700 bg-teal-50 px-3 py-1 rounded-full mt-2 mb-4">{{ $activeWelfare->abbreviation }}</span>
             
-            {{-- Member Info Block --}}
             <div class="bg-stone-50 px-6 py-3 rounded-2xl border border-stone-100 text-left">
                 <div class="text-[10px] uppercase font-black text-stone-400">My Details</div>
                 <div class="flex gap-6">
@@ -37,19 +33,24 @@
                     </div>
                     <div>
                         <div class="text-[9px] uppercase font-bold text-stone-500">Member #</div>
-                        <div class="text-sm font-black text-teal-900">{{ auth()->user()->welfareMember->member_number ?? 'N/A' }}</div>
+                        <div class="text-sm font-black text-teal-900">{{ $member->member_number ?? 'N/A' }}</div>
                     </div>
                 </div>
             </div>
         </div>
 
         @if(auth()->user()->is_super_admin || $activeMemberRole === 'admin')
-            <div class="relative mb-8">
-                <input type="text" id="liveSearch" placeholder="Search members, cases, or details..." 
-                    class="w-full p-4 rounded-2xl border border-stone-200 shadow-sm focus:ring-2 focus:ring-teal-500 outline-none transition">
+            <div class="mb-12 max-w-lg mx-auto relative">
+                <label for="liveSearch" class="block text-[10px] font-black text-stone-400 uppercase mb-2 text-center">Find Member</label>
+                <input type="text" id="liveSearch" autocomplete="off" placeholder="Search by name, TSC #, email, or member #..." 
+                       class="w-full p-4 rounded-2xl border border-stone-200 shadow-sm focus:ring-2 focus:ring-teal-500 outline-none transition text-sm">
+                
+                {{-- Results container --}}
+                <div id="searchResults" class="absolute z-50 w-full mt-2 bg-white rounded-2xl border border-stone-200 shadow-2xl hidden overflow-hidden">
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 searchable-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
                     <div class="text-stone-400 text-[10px] font-bold uppercase mb-2">Active Cases</div>
                     <div class="text-3xl font-black text-emerald-600">{{ $activeWelfare->benevolenceCases()->where('status', 'active')->count() }}</div>
@@ -75,8 +76,7 @@
             </div>
         @endif
 
-        {{-- Solidarity Fund Section --}}
-        <div class="mb-12 searchable-section">
+        <div class="mb-12">
             <h3 class="text-lg font-black text-teal-900 mb-4">Solidarity Fund</h3>
             <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm">
                 <div class="text-stone-400 text-[10px] font-bold uppercase mb-1">Current Balance</div>
@@ -91,7 +91,7 @@
                             <tbody class="divide-y divide-stone-50">
                                 @foreach($solidarityTransactions as $t)
                                 <tr>
-                                    <td class="py-4 px-4 whitespace-nowrap">{{ $t->transaction_date->format('d-m-y') }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ $t->created_at->format('d-m-y') }}</td>
                                     <td class="py-4 px-4 font-bold {{ $t->type == 'deposit' ? 'text-emerald-600' : 'text-rose-600' }}">{{ ucfirst($t->type) }}</td>
                                     <td class="py-4 px-4 font-bold">KES {{ number_format((int)$t->amount) }}</td>
                                     <td class="py-4 px-4 text-stone-500">{{ $t->description }}</td>
@@ -106,8 +106,7 @@
             </div>
         </div>
 
-        {{-- Active Cases Section --}}
-        <div class="mb-12 searchable-section">
+        <div class="mb-12">
             <h3 class="text-lg font-black text-teal-900 mb-6">Active Benevolence Cases</h3>
             @if($activeCases->isNotEmpty())
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,17 +129,52 @@
 </div>
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    const searchBar = document.getElementById('liveSearch');
-    if (searchBar) {
-        searchBar.addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase();
-            let sections = document.querySelectorAll('.searchable-section');
-            sections.forEach(section => {
-                section.style.display = section.innerText.toLowerCase().includes(filter) ? '' : 'none';
+$(document).ready(function() {
+    $('#liveSearch').on('keyup', function() {
+        let query = $(this).val();
+        let resultsDiv = $('#searchResults');
+
+        if (query.length > 2) {
+            $.ajax({
+                url: "{{ route('dashboard.search-members') }}",
+                method: "GET",
+                data: { q: query },
+                beforeSend: function() {
+                    resultsDiv.removeClass('hidden').html('<p class="p-4 text-xs text-stone-400 text-center animate-pulse">Searching...</p>');
+                },
+                success: function(data) {
+                    resultsDiv.empty();
+                    if (data.length > 0) {
+                        data.forEach(member => {
+                            resultsDiv.append(`
+                                <div class="p-4 border-b border-stone-100 flex justify-between items-center hover:bg-stone-50 transition">
+                                    <div>
+                                        <p class="font-black text-teal-900 text-sm">${member.user.name}</p>
+                                        <p class="text-[10px] text-stone-500 uppercase">M#: ${member.member_number} | TSC: ${member.user.tsc_number || 'N/A'}</p>
+                                    </div>
+                                    <a href="/welfare/${member.welfare_id}/member/${member.id}/profile" 
+                                       class="bg-teal-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-amber-600">VIEW</a>
+                                </div>
+                            `);
+                        });
+                    } else {
+                        resultsDiv.html('<p class="p-4 text-xs text-stone-500 text-center">No member found.</p>');
+                    }
+                }
             });
-        });
-    }
+        } else {
+            resultsDiv.addClass('hidden');
+        }
+    });
+
+    $(document).click(function(e) {
+        if (!$(e.target).closest('#liveSearch, #searchResults').length) {
+            $('#searchResults').addClass('hidden');
+        }
+    });
+});
 </script>
 @endpush
 @endsection

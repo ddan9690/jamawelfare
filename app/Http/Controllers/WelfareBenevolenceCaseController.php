@@ -135,21 +135,29 @@ class WelfareBenevolenceCaseController extends Controller
             ->with(['member.user', 'category', 'contributions.member.user'])
             ->findOrFail($id);
 
-        // 2. Fetch active members for the "Record Payment" modal dropdown
-        // This fixes the 'Undefined variable $members' error
-        $members = WelfareMember::where('welfare_id', $welfareId)
+        // 2. Fetch active members and map them with contribution status for SweetAlert
+        $membersData = WelfareMember::where('welfare_id', $welfareId)
             ->where('status', 'active')
             ->join('users', 'welfare_members.user_id', '=', 'users.id')
             ->orderBy('users.name', 'asc')
             ->select('welfare_members.*')
             ->with('user')
-            ->get();
+            ->get()
+            ->map(function ($member) use ($case) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->user->name,
+                    'member_number' => $member->member_number,
+                    // Checks if this member already exists in the contributions collection for this case
+                    'has_contributed' => $case->contributions->contains('member_id', $member->id)
+                ];
+            });
 
         // 3. Calculate total contributions
         $totalCollected = $case->contributions->sum('amount');
 
-        // 4. Pass all necessary data to the view
-        return view('dashboard.benevolence-cases.show', compact('case', 'totalCollected', 'members'));
+        // 4. Pass $membersData to the view instead of $members
+        return view('dashboard.benevolence-cases.show', compact('case', 'totalCollected', 'membersData'));
     }
 
     public function destroy(WelfareBenevolenceCase $case)

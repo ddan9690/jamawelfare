@@ -34,11 +34,11 @@ use App\Http\Controllers\WelfareRevenueController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => view('index'));
+Route::get('/', fn() => view('index'));
 
-Route::get('/about', fn () => view('frontend.about'));
-Route::get('/contact', fn () => view('frontend.contact'));
-Route::get('/frequetly-asked-questions', fn () => view('frontend.faq'));
+Route::get('/about', fn() => view('frontend.about'));
+Route::get('/contact', fn() => view('frontend.contact'));
+Route::get('/frequetly-asked-questions', fn() => view('frontend.faq'));
 
 Route::get('/explore', [WelfareExploreController::class, 'index'])
     ->name('frontend.explore');
@@ -112,6 +112,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+        
+    Route::get('/dashboard/search-members', [DashboardController::class, 'searchMembers'])
+        ->name('dashboard.search-members');
 
     Route::post('/welfare/switch/{welfareId}', [WelfareSwitchController::class, 'switch'])
         ->name('welfare.switch');
@@ -380,5 +383,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])
             ->name('admin.users.destroy');
     });
-
 });

@@ -67,14 +67,13 @@
                             @foreach($membersData as $m)
                                 @php
                                     $alreadyPaid = $case->contributions->where('member_id', $m['id'])->sum('amount');
-                                    $remaining = $case->category->amount - $alreadyPaid;
+                                    $target = $case->category->amount;
+                                    $outstanding = $target - $alreadyPaid;
                                 @endphp
                                 <option value="{{ $m['id'] }}" 
                                         data-name="{{ $m['name'] }}"
-                                        data-already-paid="{{ $alreadyPaid }}"
-                                        data-limit="{{ $case->category->amount }}"
-                                        data-remaining="{{ $remaining }}">
-                                    {{ $m['name'] }} (Bal: {{ $remaining }})
+                                        data-outstanding="{{ $outstanding }}">
+                                    {{ $m['name'] }} (Outstanding: {{ $outstanding > 0 ? $outstanding : 0 }})
                                 </option>
                             @endforeach
                         </select>
@@ -115,13 +114,22 @@
     $(document).ready(function() {
         $('#paymentForm').on('submit', function(e) {
             let option = $('#member_select').find(':selected');
+            let memberName = option.data('name');
             let amount = parseFloat($('#payment_amount').val());
-            let remaining = parseFloat(option.data('remaining'));
+            let outstanding = parseFloat(option.data('outstanding'));
 
-            if (remaining <= 0 || amount > remaining) {
+            if (amount > outstanding && outstanding > 0) {
                 e.preventDefault();
-                let text = (remaining <= 0) ? 'Limit reached. Entire amount to Solidarity Fund. Continue?' : 'Excess will be sent to Solidarity Fund. Continue?';
-                Swal.fire({ title: 'Distribution', text: text, icon: 'info', showCancelButton: true, confirmButtonColor: '#064e3b', confirmButtonText: 'Yes' })
+                let excess = amount - outstanding;
+                let text = `Member ${memberName} has completed the contribution for this case. The excess amount of Ksh ${excess} will be safely credited to the member's Solidarity Fund account. Proceed?`;
+                
+                Swal.fire({ title: 'Processing Contribution', text: text, icon: 'info', showCancelButton: true, confirmButtonColor: '#064e3b', confirmButtonText: 'Confirm' })
+                .then((result) => { if (result.isConfirmed) this.submit(); });
+            } else if (outstanding <= 0) {
+                e.preventDefault();
+                let text = `Member ${memberName} has completed the contribution for this case. The excess amount of Ksh ${amount} will be credited to the member's Solidarity Fund account. Proceed?`;
+                
+                Swal.fire({ title: 'Solidarity Contribution', text: text, icon: 'info', showCancelButton: true, confirmButtonColor: '#064e3b', confirmButtonText: 'Confirm' })
                 .then((result) => { if (result.isConfirmed) this.submit(); });
             }
         });

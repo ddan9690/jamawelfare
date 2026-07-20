@@ -5,9 +5,11 @@
 <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     class="fixed inset-y-0 left-0 w-64 bg-teal-900 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 z-50 overflow-y-auto shadow-xl">
 
-    <div class="p-6 flex items-center justify-between border-b border-teal-800">
-        <a href="/" class="text-xl font-black text-amber-500 hover:opacity-90 transition">
-            Jama<span class="text-white">Welfare</span>
+    <div class="p-6 flex items-center justify-between border-b border-teal-800 bg-teal-950/50">
+        <a href="/" class="flex items-center shrink-0 py-1 hover:opacity-90 transition">
+            <div class="bg-white px-3 py-1.5 rounded-xl shadow-sm">
+                <img src="{{ asset('images/jamawelfare-logo.png') }}" alt="JamaWelfare Logo" class="h-8 w-auto block" width="180" height="32">
+            </div>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-white text-2xl">
             <i class='bx bx-x'></i>

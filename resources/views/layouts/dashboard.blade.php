@@ -1,9 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') | JamaWelfare</title>
+    <title>@yield('title', 'Dashboard') | JamaWelfare</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="@yield('meta_description', 'Secure and transparent teacher welfare, contributions, and benevolence management system for Kenyan educators.')">
+    <meta name="keywords"
+        content="teacher welfare Kenya, welfare management system, contribution software, Kenyan educators welfare, JamaWelfare">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/jamawelfare-favicon.svg') }}" type="image/svg+xml">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}"> <!-- Fallback for older browsers -->
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -36,11 +47,14 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('.select2').select2({ width: '100%' });
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%'
+            });
         });
     </script>
 
     @stack('scripts')
 </body>
+
 </html>

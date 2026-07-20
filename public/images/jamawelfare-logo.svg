@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient for Icon -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#134e4a" />
+    </linearGradient>
+
+    <!-- Tech Circuit / Connection Gradient -->
+    <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Warm Accent for Unity/Care -->
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Subtle Drop Shadow for Depth -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- ICON SECTION (Left) -->
+  <g transform="translate(30, 30)">
+    <!-- Base Shield / Rounded Background Container representing Security & Welfare -->
+    <rect x="0" y="0" width="240" height="240" rx="48" fill="url(#bgGrad)" filter="url(#shadow)" />
+
+    <!-- Abstract Circuit Grid Background (Tech Layer) -->
+    <g stroke="url(#techGrad)" stroke-width="2" stroke-linecap="round" opacity="0.3" fill="none">
+      <path d="M 40 120 H 80" />
+      <path d="M 160 120 H 200" />
+      <path d="M 120 40 V 80" />
+      <circle cx="40" cy="120" r="3" fill="#2dd4bf" />
+      <circle cx="200" cy="120" r="3" fill="#2dd4bf" />
+      <circle cx="120" cy="40" r="3" fill="#2dd4bf" />
+    </g>
+
+    <!-- Central Motif: Interlocking Figures (Unity) + Book/Graduation Base (Teacher Centered) + Digital Node Core (Tech) -->
+    <g transform="translate(120, 120)">
+      
+      <!-- Open Book / Wings of Growth Base -->
+      <path d="M -50 20 C -25 10, -10 25, 0 35 C 10 25, 25 10, 50 20 C 50 -10, 40 -30, 0 -45 C -40 -30, -50 -10, -50 20 Z" 
+            fill="#ffffff" opacity="0.1" />
+
+      <!-- Left Figure (Teacher/Member) -->
+      <circle cx="-25" cy="-12" r="10" fill="#ffffff" />
+      <path d="M -45 30 C -45 5, -25 5, -25 5 C -25 5, -5 5, -5 30" 
+            fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+
+      <!-- Right Figure (Teacher/Member in Unity) -->
+      <circle cx="25" cy="-12" r="10" fill="#fbbf24" />
+      <path d="M 5 30 C 5 5, 25 5, 25 5 C 25 5, 45 5, 45 30" 
+            fill="none" stroke="url(#warmGrad)" stroke-width="6" stroke-linecap="round" />
+
+      <!-- Central Tech Node / Shield Core (Connecting Links & Transparency) -->
+      <circle cx="0" cy="2" r="14" fill="#0f766e" stroke="url(#techGrad)" stroke-width="4" />
+      <circle cx="0" cy="2" r="5" fill="#38bdf8" />
+
+      <!-- Upward Growth Spark / Pillar -->
+      <path d="M 0 -35 V -55" stroke="url(#techGrad)" stroke-width="4" stroke-linecap="round" />
+      <circle cx="0" cy="-60" r="4" fill="#fbbf24" />
+    </g>
+  </g>
+
+  <!-- TYPOGRAPHY SECTION (Right) -->
+  <g transform="translate(300, 0)">
+    <!-- Brand Name -->
+    <text x="0" y="140" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="64" letter-spacing="-1">
+      <tspan fill="#134e4a">Jama</tspan><tspan fill="#d97706">Welfare</tspan>
+    </text>
+
+    <!-- Tagline -->
+    <text x="4" y="180" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="18" fill="#57534e" letter-spacing="1.5">
+      WELFARE MANAGEMENT SYSTEM
+    </text>
+
+    <!-- Accent Feature Pill representing Pillars -->
+    <g transform="translate(4, 205)">
+      <rect x="0" y="0" width="85" height="6" rx="3" fill="#0d9488" />
+      <rect x="93" y="0" width="55" height="6" rx="3" fill="#d97706" />
+      <rect x="156" y="0" width="35" height="6" rx="3" fill="#e7e5e4" />
+    </g>
+  </g>
+</svg>

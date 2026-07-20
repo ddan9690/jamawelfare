@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient Matching the Logo Icon -->
+    <linearGradient id="faviconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#134e4a" />
+    </linearGradient>
+
+    <!-- Warm Accent Gradient for Unity -->
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Tech Cyan Gradient -->
+    <linearGradient id="techGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded Square Container -->
+  <rect x="0" y="0" width="100" height="100" rx="22" fill="url(#faviconBg)" />
+
+  <!-- Simplified Central Motif optimized for small sizes (Favicon) -->
+  <g transform="translate(50, 52)">
+    <!-- Left Figure -->
+    <circle cx="-12" cy="-6" r="5" fill="#ffffff" />
+    <path d="M -22 14 C -22 2, -12 2, -12 2 C -12 2, -2 2, -2 14" 
+          fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" />
+
+    <!-- Right Figure -->
+    <circle cx="12" cy="-6" r="5" fill="#fbbf24" />
+    <path d="M 2 14 C 2 2, 12 2, 12 2 C 12 2, 22 2, 22 14" 
+          fill="none" stroke="url(#warmGrad)" stroke-width="3.5" stroke-linecap="round" />
+
+    <!-- Central Tech/Security Node Core -->
+    <circle cx="0" cy="0" r="6" fill="#0f766e" stroke="url(#techGrad)" stroke-width="2.5" />
+  </g>
+</svg>

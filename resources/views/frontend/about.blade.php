@@ -3,59 +3,87 @@
 @section('title', 'About Us')
 
 @section('content')
-<section class="py-12 md:py-20 px-4 md:px-6 bg-stone-50">
-    <div class="max-w-4xl mx-auto">
+<!-- Hero Section -->
+<header class="bg-white py-20 px-6 border-b border-stone-100 overflow-hidden" x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)">
+    <div class="max-w-4xl mx-auto text-center">
+        <span class="inline-block bg-teal-50 text-teal-800 font-bold px-3 py-1 rounded-full text-xs tracking-wider uppercase mb-6 transition-all duration-700 transform"
+              :class="show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'">
+            About JamaWelfare
+        </span>
         
-        <!-- Mission Header -->
-        <div class="text-center mb-16">
-            <h1 class="text-3xl md:text-5xl font-black text-teal-900 mb-6">Empowering Communities Through Transparency</h1>
-            <p class="text-stone-600 text-lg leading-relaxed max-w-2xl mx-auto">
-                We believe that professional associations and welfare groups are the backbone of Kenyan society. Our platform is dedicated to digitizing these connections, making benevolence and contribution management seamless for everyone.
-            </p>
+        <h1 class="text-4xl md:text-5xl font-black text-teal-900 mb-6 leading-tight transition-all duration-700 delay-100 transform"
+            :class="show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'">
+            Rooted in community. Powered by modern infrastructure.
+        </h1>
+        
+        <p class="text-stone-600 text-lg mb-8 leading-relaxed max-w-2xl mx-auto transition-all duration-700 delay-200 transform"
+           :class="show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'">
+            JamaWelfare was born out of a deep understanding of Kenyan teacher associations—valuable spaces where educators pool resources, support families, and stand shoulder to shoulder through every season of life.
+        </p>
+    </div>
+</header>
+
+<!-- Our Mission & Story -->
+<section class="py-20 px-6 bg-stone-50 border-b border-stone-100">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-amber-600 font-bold tracking-widest uppercase text-xs mb-2 block">Our Purpose</span>
+            <h2 class="text-3xl font-black text-teal-900 mb-4">Restoring dignity and clarity to group leadership</h2>
+            <p class="text-stone-600 text-sm">Empowering educators with structured digital infrastructure to replace administrative burnout.</p>
         </div>
 
-        <!-- Vision/Values Cards -->
-        <div class="grid md:grid-cols-3 gap-6 mb-20">
-            <div class="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
-                <div class="text-3xl mb-4">🎯</div>
-                <h3 class="font-black text-teal-900 mb-2">Our Mission</h3>
-                <p class="text-sm text-stone-600 leading-relaxed">To provide intuitive, automated tools that simplify financial administration for professional associations across Kenya.</p>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
-                <div class="text-3xl mb-4">🛡️</div>
-                <h3 class="font-black text-teal-900 mb-2">Transparency</h3>
-                <p class="text-sm text-stone-600 leading-relaxed">Building trust by ensuring every member has real-time access to their contribution ledgers and case participation history.</p>
-            </div>
-            <div class="bg-white p-8 rounded-3xl border border-stone-100 shadow-sm">
-                <div class="text-3xl mb-4">🚀</div>
-                <h3 class="font-black text-teal-900 mb-2">Efficiency</h3>
-                <p class="text-sm text-stone-600 leading-relaxed">Moving from manual paper-based records to digital, high-speed analysis and automated reporting.</p>
-            </div>
-        </div>
-
-        <!-- Story Section -->
-        <div class="bg-white p-8 md:p-12 rounded-3xl border border-stone-100 shadow-sm flex flex-col md:flex-row items-center gap-8">
-            <div class="flex-1">
-                <h2 class="text-2xl font-black text-teal-900 mb-4">Built for Professionals</h2>
-                <p class="text-stone-600 leading-relaxed mb-6">
-                    Our journey started with a simple observation: managing welfare contributions and benevolence cases in large organizations was complex, prone to error, and lacked transparency.
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h3 class="text-2xl font-black text-teal-900 mb-6">Built to lift the weight of manual administration.</h3>
+                <p class="text-stone-600 mb-4 leading-relaxed">
+                    For years, welfare groups have relied heavily on physical logbooks, fragmented mobile money statements, and manual spreadsheets. While the intent and spirit of togetherness have always been strong, the administrative burden often burns out officials and leaves members in the dark.
                 </p>
                 <p class="text-stone-600 leading-relaxed">
-                    Designed by developers and teachers who understand the nuances of the Kenyan professional landscape, this platform ensures that you spend less time on administration and more time supporting your colleagues when it matters most.
+                    We built JamaWelfare to lift that weight. By introducing automated tracking, real-time ledgers, and clear member directories, we give groups the structure they need to thrive without losing their personal touch.
                 </p>
             </div>
-            <div class="w-full md:w-1/3 aspect-square bg-teal-900 rounded-3xl flex items-center justify-center text-6xl">
-                🇰🇪
+            <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-teal-50 text-teal-900 rounded-xl flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class='bx bx-check-shield'></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-teal-900 mb-1">Absolute Transparency</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed">Every contribution is logged and instantly visible to members, removing doubt and building unbreakable trust.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-amber-50 text-amber-700 rounded-xl flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class='bx bx-group'></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-teal-900 mb-1">Committed Communities</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed">Our automated tools highlight active participation, ensuring associations stay focused on dedicated members.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-stone-100 text-stone-700 rounded-xl flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class='bx bx-tachometer'></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-teal-900 mb-1">Effortless Operations</h4>
+                        <p class="text-stone-600 text-xs leading-relaxed">Freeing welfare officials from manual record-keeping so they can focus on what truly matters: supporting each other.</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Call to Action -->
-        <div class="mt-16 text-center">
-            <h3 class="text-xl font-black text-teal-900 mb-6">Ready to get started?</h3>
-            <div class="flex gap-4 justify-center">
-                <a href="{{ route('frontend.explore') }}" class="bg-teal-900 text-white px-8 py-4 rounded-xl font-black hover:bg-amber-600 transition shadow-lg">Explore Welfares</a>
-                <a href="/contact" class="bg-white text-teal-900 px-8 py-4 rounded-xl font-black border border-stone-200 hover:bg-stone-50 transition">Contact Us</a>
-            </div>
+<!-- Call to Action -->
+<section class="py-20 px-6 bg-white text-center">
+    <div class="max-w-3xl mx-auto">
+        <span class="text-amber-600 font-bold tracking-widest uppercase text-xs mb-2 block">Get Started</span>
+        <h2 class="text-3xl font-black text-teal-900 mb-4">Be part of the digital welfare movement.</h2>
+        <p class="text-stone-600 mb-8 max-w-xl mx-auto">Whether you want to join an active association or migrate your group's records onto a clean platform, we are ready to walk with you.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/explore" class="bg-teal-900 text-white px-8 py-3.5 rounded-xl font-bold hover:bg-teal-800 transition shadow-sm">Explore Active Welfares</a>
+            <a href="/contact" class="bg-stone-100 text-teal-900 border border-stone-200 px-8 py-3.5 rounded-xl font-bold hover:bg-stone-200 transition">Get in Touch</a>
         </div>
     </div>
 </section>

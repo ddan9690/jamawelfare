@@ -39,6 +39,8 @@ Route::get('/', fn() => view('index'));
 Route::get('/about', fn() => view('frontend.about'));
 Route::get('/contact', fn() => view('frontend.contact'));
 Route::get('/frequetly-asked-questions', fn() => view('frontend.faq'));
+Route::get('/privacy-policy', fn() => view('frontend.privacy'))->name('privacy');
+Route::get('/terms-and-conditions', fn() => view('frontend.terms'))->name('terms');
 
 Route::get('/explore', [WelfareExploreController::class, 'index'])
     ->name('frontend.explore');
@@ -112,7 +114,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-        
+
     Route::get('/dashboard/search-members', [DashboardController::class, 'searchMembers'])
         ->name('dashboard.search-members');
 
@@ -156,6 +158,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{id}/{slug}/edit', [WelfareController::class, 'edit'])->name('welfares.edit');
 
             Route::put('/{id}/{slug}', [WelfareController::class, 'update'])->name('welfares.update');
+
+            Route::patch('/{id}/{slug}/toggle-status', [WelfareController::class, 'toggleStatus'])->name('welfares.toggle-status');
 
             Route::delete('/{id}/{slug}', [WelfareController::class, 'destroy'])->name('welfares.destroy');
 

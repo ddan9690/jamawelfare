@@ -6,9 +6,9 @@
     class="fixed inset-y-0 left-0 w-64 bg-teal-900 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 z-50 overflow-y-auto shadow-xl">
 
     <div class="p-6 flex items-center justify-between border-b border-teal-800">
-        <div class="text-xl font-black text-amber-500">
+        <a href="/" class="text-xl font-black text-amber-500 hover:opacity-90 transition">
             Jama<span class="text-white">Welfare</span>
-        </div>
+        </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-white text-2xl">
             <i class='bx bx-x'></i>
         </button>
@@ -30,16 +30,16 @@
                 <p class="text-[10px] uppercase font-bold text-teal-400 mb-3 tracking-wider">System Admin</p>
                 <nav class="space-y-1">
                     <a href="{{ route('welfares.index') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('welfares.*') ? 'text-amber-500 font-bold' : '' }}">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('welfares.*') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-building'></i> Welfares
                     </a>
                     <a href="{{ route('admin.revenue.index') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('admin.revenue.*') ? 'text-amber-500 font-bold' : '' }}">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('admin.revenue.*') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-money'></i> Welfare Revenue Tracking
                     </a>
                     <a href="{{ route('admin.users.index') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition">
-                        <i class='bx bx-user-group'></i> User Management
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('admin.users.*') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
+                        <i class='bx bx-user-pin'></i> Users
                     </a>
                 </nav>
             </div>
@@ -50,11 +50,11 @@
                 <p class="text-[10px] uppercase font-bold text-teal-400 mb-3 tracking-wider">Welfare Management</p>
                 <nav class="space-y-1">
                     <a href="{{ route('welfares.show', ['id' => $activeWelfare->id, 'slug' => $activeWelfare->slug]) }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('welfares.show') ? 'text-amber-500 font-bold' : '' }}">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('welfares.show') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-grid-alt'></i> Welfare Dashboard
                     </a>
                     <a href="{{ route('benevolence-categories.index') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('benevolence-categories.*') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-list-ol'></i> Benevolence Categories
                     </a>
                     <a href="{{ route('benevolence-cases.index') }}"
@@ -70,11 +70,11 @@
             <nav class="space-y-1">
                 @if (isset($activeWelfare) && $activeWelfare)
                     <a href="{{ route('member.my-cases') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('member.my-cases') ? 'text-amber-400 font-bold' : '' }}">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('member.my-cases') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-folder'></i> My Cases
                     </a>
                     <a href="{{ route('member.my-contributions') }}"
-                        class="flex items-center gap-3 py-2 text-sm hover:text-amber-400 transition {{ request()->routeIs('member.my-contributions') ? 'text-amber-400 font-bold' : '' }}">
+                        class="flex items-center gap-3 py-2 text-sm transition {{ request()->routeIs('member.my-contributions') ? 'text-amber-400 font-bold' : 'hover:text-amber-400' }}">
                         <i class='bx bx-chart'></i> My Contributions
                     </a>
                 @else

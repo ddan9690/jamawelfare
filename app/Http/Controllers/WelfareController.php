@@ -7,6 +7,7 @@ use App\Models\Welfare;
 use App\Models\WelfareMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Storage;
 
 class WelfareController extends Controller
 {
@@ -57,7 +58,7 @@ class WelfareController extends Controller
         return view('dashboard.welfares.show', compact('welfare'));
     }
 
-    
+
     public function edit($id, $slug)
     {
         $welfare = Welfare::where('id', $id)->where('slug', $slug)->firstOrFail();
@@ -74,12 +75,24 @@ class WelfareController extends Controller
             'abbreviation' => 'required|string|max:50',
             'county_id' => 'required|exists:counties,id',
             'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
+        if ($request->hasFile('logo')) {
+            // Delete old logo if it exists
+            if ($welfare->logo && \Storage::disk('public')->exists($welfare->logo)) {
+                Storage::disk('public')->delete($welfare->logo);
+            }
+
+            $path = $request->file('logo')->store('welfares', 'public');
+            $validated['logo'] = $path;
+        }
+
         $validated['slug'] = Str::slug($validated['name']);
+
         $welfare->update($validated);
 
-        return redirect()->route('welfares.index')->with('success', 'Welfare updated.');
+        return redirect()->route('welfares.index')->with('success', 'Welfare updated successfully.');
     }
 
     public function destroy($id, $slug)
@@ -135,5 +148,19 @@ class WelfareController extends Controller
         $member->update(['role' => 'member']);
 
         return back()->with('success', 'Admin status removed successfully.');
+    }
+
+    public function toggleStatus($id, $slug)
+    {
+        $welfare = Welfare::where('id', $id)->where('slug', $slug)->firstOrFail();
+
+        $welfare->status = $welfare->status === 'active' ? 'suspended' : 'active';
+        $welfare->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Welfare status updated successfully!',
+            'status' => $welfare->status
+        ]);
     }
 }
